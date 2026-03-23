@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/axios";
+import { safeGet, safeSet, safeRemove } from "../utils/storage";
 
 const AuthContext = createContext(null);
 
@@ -8,20 +9,20 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    const token = safeGet("token");
+    const savedUser = safeGet("user");
     if (token && savedUser) {
       try {
         setUser(JSON.parse(savedUser));
       } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        safeRemove("token");
+        safeRemove("user");
       }
       api.get("/auth/me").then(({ data }) => {
         setUser((prev) => ({ ...prev, ...data }));
       }).catch(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        safeRemove("token");
+        safeRemove("user");
         setUser(null);
       }).finally(() => setLoading(false));
     } else {
@@ -31,23 +32,23 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const { data } = await api.post("/auth/login", { email, password });
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    safeSet("token", data.token);
+    safeSet("user", JSON.stringify(data.user));
     setUser(data.user);
     return data;
   };
 
   const register = async (name, email, password, phone) => {
     const { data } = await api.post("/auth/register", { name, email, password, phone });
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    safeSet("token", data.token);
+    safeSet("user", JSON.stringify(data.user));
     setUser(data.user);
     return data;
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    safeRemove("token");
+    safeRemove("user");
     setUser(null);
   };
 
@@ -55,7 +56,7 @@ export function AuthProvider({ children }) {
     const { data } = await api.put("/auth/profile", updates);
     setUser((prev) => {
       const updated = { ...prev, ...data };
-      localStorage.setItem("user", JSON.stringify(updated));
+      safeSet("user", JSON.stringify(updated));
       return updated;
     });
     return data;

@@ -13,6 +13,7 @@ export default class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
+      const msg = this.state.error?.message || "";
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
           <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md text-center">
@@ -21,6 +22,9 @@ export default class ErrorBoundary extends Component {
             <p className="text-gray-600 mb-6">
               The app encountered an error. Try refreshing the page.
             </p>
+            {msg && (
+              <p className="text-xs text-gray-400 mb-4 font-mono truncate" title={msg}>{msg}</p>
+            )}
             <button
               onClick={() => window.location.reload()}
               className="bg-promart-red text-white px-6 py-2 rounded-xl font-semibold hover:bg-red-600"

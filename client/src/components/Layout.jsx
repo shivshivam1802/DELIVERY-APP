@@ -1,12 +1,14 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import PushNotificationPrompt from "./PushNotificationPrompt";
+import ApiBanner from "./ApiBanner";
 import { useAuth } from "../context/AuthContext";
 
 export default function Layout() {
   const { user } = useAuth();
   return (
     <div className="min-h-screen flex flex-col">
+      <ApiBanner />
       <Navbar />
       <main className="flex-1">
         <Outlet />

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { safeGet, safeRemove } from "../utils/storage";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api",
@@ -6,7 +7,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = safeGet("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -15,9 +16,13 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      safeRemove("token");
+      safeRemove("user");
+      try {
+        window.location.href = "/login";
+      } catch {
+        // ignore
+      }
     }
     return Promise.reject(err);
   }

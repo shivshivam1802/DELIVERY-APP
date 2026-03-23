@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { usePushNotifications } from "../hooks/usePushNotifications";
+import { safeGet, safeSet } from "../utils/storage";
 
 export default function PushNotificationPrompt({ user }) {
   const { supported, subscribed, subscribe } = usePushNotifications(!!user);
   const [dismissed, setDismissed] = useState(() =>
-    localStorage.getItem("pushPromptDismissed") === "true"
+    safeGet("pushPromptDismissed") === "true"
   );
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +28,7 @@ export default function PushNotificationPrompt({ user }) {
       <div className="flex gap-2">
         <button
           onClick={() => {
-            localStorage.setItem("pushPromptDismissed", "true");
+            safeSet("pushPromptDismissed", "true");
             setDismissed(true);
           }}
           className="text-gray-500 text-sm"
