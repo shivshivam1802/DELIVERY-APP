@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { DEMO_RESTAURANT_DETAIL } from "../data/demoRestaurants";
 
 function Img({ src, alt, className }) {
   const [loaded, setLoaded] = useState(false);
@@ -34,7 +35,13 @@ export default function RestaurantDetail() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    api.get(`/restaurants/${id}`).then(({ data }) => setRestaurant(data)).catch(console.error);
+    if (id?.startsWith("demo-")) {
+      setRestaurant(DEMO_RESTAURANT_DETAIL[id] || null);
+      return;
+    }
+    api.get(`/restaurants/${id}`)
+      .then(({ data }) => setRestaurant(data))
+      .catch(() => setRestaurant(null));
   }, [id]);
 
   const menu = Array.isArray(restaurant?.menu) ? restaurant.menu : [];

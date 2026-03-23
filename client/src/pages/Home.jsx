@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { DEMO_RESTAURANTS } from "../data/demoRestaurants";
 
 function RestaurantImage({ src, alt, className = "" }) {
   const [loaded, setLoaded] = useState(false);
@@ -37,7 +38,7 @@ export default function Home() {
       setRestaurants(Array.isArray(data) ? data : []);
       setLoading(false);
     }).catch(() => {
-      setRestaurants([]);
+      setRestaurants(DEMO_RESTAURANTS);
       setLoading(false);
     });
   }, [search]);
