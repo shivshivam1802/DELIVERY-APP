@@ -1,13 +1,35 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 * {
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+/* Smooth image loading */
+img {
+  @apply transition-opacity duration-300;
+}
+
+img[data-loaded="false"] {
+  @apply opacity-0;
+}
+
+img[data-loaded="true"] {
+  @apply opacity-100;
+}
+
+/* Card hover effects */
+.restaurant-card {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+}
+
+.menu-item-card {
+  @apply transition-all duration-200 hover:shadow-lg hover:border-promart-orange/30;
 }

@@ -18,7 +18,7 @@ router.post("/", auth, async (req, res) => {
   try {
     let cart = await Cart.findOne({ userId: req.user._id });
     if (!cart) cart = new Cart({ userId: req.user._id, items: [] });
-    const { restaurantId, itemId, name, price, quantity } = req.body;
+    const { restaurantId, itemId, name, price, quantity, image } = req.body;
     const existing = cart.items.find(
       (i) => String(i.restaurantId) === String(restaurantId) && String(i.itemId) === String(itemId)
     );
@@ -28,7 +28,7 @@ router.post("/", auth, async (req, res) => {
       if (cart.items.length > 0 && String(cart.items[0].restaurantId) !== String(restaurantId)) {
         return res.status(400).json({ error: "Can only add items from one restaurant at a time. Clear cart first." });
       }
-      cart.items.push({ restaurantId, itemId, name, price, quantity: quantity || 1 });
+      cart.items.push({ restaurantId, itemId, name, price, quantity: quantity || 1, image: image || "" });
     }
     await cart.save();
     res.json(cart);
