@@ -5,7 +5,7 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    api.get("/admin/orders").then(({ data }) => setOrders(data)).catch(console.error);
+    api.get("/admin/orders").then(({ data }) => setOrders(Array.isArray(data) ? data : [])).catch(() => setOrders([]));
   }, []);
 
   return (
@@ -23,7 +23,7 @@ export default function AdminOrders() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((o) => (
+            {(Array.isArray(orders) ? orders : []).map((o) => (
               <tr key={o._id} className="border-t">
                 <td className="p-4">{o.userId?.name}</td>
                 <td className="p-4">{o.restaurantId?.name}</td>

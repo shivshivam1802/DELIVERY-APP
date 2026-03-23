@@ -15,7 +15,7 @@ export function CartProvider({ children }) {
     }
     try {
       const { data } = await api.get("/cart");
-      setCart(data);
+      setCart({ ...data, items: Array.isArray(data?.items) ? data.items : [] });
     } catch {
       setCart({ items: [] });
     }
@@ -29,7 +29,7 @@ export function CartProvider({ children }) {
     if (!user) return { error: "Login required" };
     try {
       const { data } = await api.post("/cart", item);
-      setCart(data);
+      setCart({ ...data, items: Array.isArray(data?.items) ? data.items : [] });
       return data;
     } catch (err) {
       return { error: err.response?.data?.error || "Failed to add" };
@@ -40,7 +40,7 @@ export function CartProvider({ children }) {
     if (!user) return;
     try {
       const { data } = await api.put(`/cart/${index}`, { quantity });
-      setCart(data);
+      setCart({ ...data, items: Array.isArray(data?.items) ? data.items : [] });
     } catch (err) {
       console.error(err);
     }
@@ -50,19 +50,20 @@ export function CartProvider({ children }) {
     if (!user) return;
     try {
       const { data } = await api.delete("/cart");
-      setCart(data);
+      setCart(data && Array.isArray(data.items) ? data : { items: [] });
     } catch (err) {
       console.error(err);
     }
   };
 
-  const cartCount = cart?.items?.reduce((s, i) => s + i.quantity, 0) || 0;
-  const cartTotal = cart?.items?.reduce((s, i) => s + i.price * i.quantity, 0) || 0;
+  const items = Array.isArray(cart?.items) ? cart.items : [];
+  const cartCount = items.reduce((s, i) => s + (i.quantity || 0), 0);
+  const cartTotal = items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 0), 0);
 
   return (
     <CartContext.Provider
       value={{
-        cart,
+        cart: { ...cart, items },
         cartCount,
         cartTotal,
         addToCart,

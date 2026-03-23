@@ -8,7 +8,7 @@ export default function RestaurantOrders() {
   const [orders, setOrders] = useState([]);
 
   const fetchOrders = useCallback(() => {
-    if (user) api.get("/orders").then(({ data }) => setOrders(data));
+    if (user) api.get("/orders").then(({ data }) => setOrders(Array.isArray(data) ? data : [])).catch(() => setOrders([]));
   }, [user]);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function RestaurantOrders() {
   const updateStatus = async (orderId, status) => {
     try {
       await api.patch(`/orders/${orderId}/status`, { status });
-      setOrders((prev) => prev.map((o) => (o._id === orderId ? { ...o, status } : o)));
+      setOrders((prev) => (Array.isArray(prev) ? prev : []).map((o) => (o._id === orderId ? { ...o, status } : o)));
     } catch (err) {
       alert(err.response?.data?.error || "Failed");
     }
@@ -43,7 +43,7 @@ export default function RestaurantOrders() {
                 }`}>{o.status}</span>
               </div>
               <ul className="text-sm text-gray-600 my-2">
-                {o.items?.map((i, idx) => (
+                {(Array.isArray(o.items) ? o.items : []).map((i, idx) => (
                   <li key={idx}>{i.name} x {i.quantity}</li>
                 ))}
               </ul>

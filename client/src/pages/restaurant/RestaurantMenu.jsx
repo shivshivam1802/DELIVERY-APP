@@ -89,7 +89,7 @@ export default function RestaurantMenu() {
 
       <h2 className="font-semibold mb-4">Menu Items</h2>
       <div className="space-y-2">
-        {restaurant?.menu?.map((item) => (
+        {(Array.isArray(restaurant?.menu) ? restaurant.menu : []).map((item) => (
           <div key={item._id} className="bg-white rounded-xl shadow p-4 flex justify-between items-center">
             <div>
               <h3 className="font-semibold">{item.name}</h3>

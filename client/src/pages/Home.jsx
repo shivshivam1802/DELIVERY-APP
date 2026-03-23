@@ -34,14 +34,19 @@ export default function Home() {
   useEffect(() => {
     const q = search ? `?search=${encodeURIComponent(search)}` : "";
     api.get(`/restaurants${q}`).then(({ data }) => {
-      setRestaurants(data);
+      setRestaurants(Array.isArray(data) ? data : []);
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }).catch(() => {
+      setRestaurants([]);
+      setLoading(false);
+    });
   }, [search]);
 
   useEffect(() => {
     if (user) {
-      api.get("/recommendations").then(({ data }) => setRecommendations(data)).catch(() => {});
+      api.get("/recommendations").then(({ data }) => {
+        setRecommendations(data && Array.isArray(data.recommended) ? data : null);
+      }).catch(() => {});
     }
   }, [user]);
 
@@ -78,7 +83,7 @@ export default function Home() {
 
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Recommendations */}
-        {recommendations?.recommended?.length > 0 && (
+        {Array.isArray(recommendations?.recommended) && recommendations.recommended.length > 0 && (
           <div className="mb-14">
             <h2 className="text-2xl font-bold mb-1 text-gray-900">Recommended for you</h2>
             <p className="text-gray-500 mb-6">{recommendations.basedOn}</p>
@@ -125,14 +130,14 @@ export default function Home() {
               </div>
             ))}
           </div>
-        ) : restaurants.length === 0 ? (
+        ) : !Array.isArray(restaurants) || restaurants.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl">
             <p className="text-6xl mb-4">🔍</p>
             <p className="text-gray-500 text-lg">No restaurants found. Try a different search.</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {restaurants.map((r) => (
+            {(Array.isArray(restaurants) ? restaurants : []).map((r) => (
               <Link key={r._id} to={`/restaurant/${r._id}`} className="restaurant-card block group">
                 <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
                   <div className="h-44 relative overflow-hidden">

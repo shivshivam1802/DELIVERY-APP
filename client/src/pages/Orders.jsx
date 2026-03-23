@@ -17,7 +17,7 @@ export default function Orders() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    if (user) api.get("/orders").then(({ data }) => setOrders(data)).catch(console.error);
+    if (user) api.get("/orders").then(({ data }) => setOrders(Array.isArray(data) ? data : [])).catch(() => setOrders([]));
   }, [user]);
 
   if (!user) {
@@ -35,7 +35,7 @@ export default function Orders() {
         <p className="text-gray-500 text-center py-12">No orders yet.</p>
       ) : (
         <div className="space-y-4">
-          {orders.map((o) => (
+          {(Array.isArray(orders) ? orders : []).map((o) => (
             <Link key={o._id} to={`/orders/${o._id}`} className="block">
               <div className="bg-white rounded-xl shadow p-4 hover:shadow-lg transition">
                 <div className="flex justify-between items-start">

@@ -24,10 +24,11 @@ export default function Cart() {
   const [placing, setPlacing] = useState(false);
 
   const handlePlaceOrder = async () => {
-    if (!user || cart.items?.length === 0) return;
+    const cartItems = Array.isArray(cart.items) ? cart.items : [];
+    if (!user || cartItems.length === 0) return;
     setPlacing(true);
     try {
-      const items = cart.items.map((i) => ({
+      const items = cartItems.map((i) => ({
         itemId: i.itemId,
         name: i.name,
         price: i.price,
@@ -63,7 +64,7 @@ export default function Cart() {
     );
   }
 
-  if (cart.items?.length === 0) {
+  if (!Array.isArray(cart.items) || cart.items.length === 0) {
     return (
       <div className="max-w-md mx-auto px-4 py-20 text-center">
         <div className="bg-white rounded-2xl shadow-lg p-12">
@@ -82,7 +83,7 @@ export default function Cart() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
       <div className="space-y-4">
-        {cart.items?.map((item, idx) => (
+        {(Array.isArray(cart.items) ? cart.items : []).map((item, idx) => (
           <div key={idx} className="bg-white rounded-2xl shadow-md p-5 flex gap-4 items-center border border-gray-100">
             <Img src={item.image} alt={item.name} />
             <div className="flex-1 min-w-0">

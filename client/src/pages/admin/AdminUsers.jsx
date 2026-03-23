@@ -5,13 +5,13 @@ export default function AdminUsers() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    api.get("/admin/users").then(({ data }) => setUsers(data)).catch(console.error);
+    api.get("/admin/users").then(({ data }) => setUsers(Array.isArray(data) ? data : [])).catch(() => setUsers([]));
   }, []);
 
   const toggleActive = async (id, isActive) => {
     try {
       const { data } = await api.patch(`/admin/users/${id}`, { isActive });
-      setUsers((prev) => prev.map((u) => (u._id === id ? data : u)));
+      setUsers((prev) => (Array.isArray(prev) ? prev : []).map((u) => (u._id === id ? data : u)));
     } catch (err) {
       alert(err.response?.data?.error || "Failed");
     }
@@ -31,7 +31,7 @@ export default function AdminUsers() {
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
+            {(Array.isArray(users) ? users : []).map((u) => (
               <tr key={u._id} className="border-t">
                 <td className="p-4">{u.name}</td>
                 <td className="p-4">{u.email}</td>

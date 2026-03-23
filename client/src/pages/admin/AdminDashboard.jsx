@@ -35,7 +35,7 @@ export default function AdminDashboard() {
 
       <h2 className="font-semibold mb-4">Recent Orders</h2>
       <div className="bg-white rounded-xl shadow overflow-hidden">
-        {stats.recentOrders?.length === 0 ? (
+        {!Array.isArray(stats.recentOrders) || stats.recentOrders.length === 0 ? (
           <p className="p-6 text-gray-500">No orders.</p>
         ) : (
           <table className="w-full">
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {stats.recentOrders?.map((o) => (
+              {(Array.isArray(stats.recentOrders) ? stats.recentOrders : []).map((o) => (
                 <tr key={o._id} className="border-t">
                   <td className="p-4">{o.restaurantId?.name}</td>
                   <td className="p-4">{o.status}</td>

@@ -37,10 +37,11 @@ export default function RestaurantDetail() {
     api.get(`/restaurants/${id}`).then(({ data }) => setRestaurant(data)).catch(console.error);
   }, [id]);
 
-  const filteredMenu = restaurant?.menu?.filter(
-    (m) => !search || m.name.toLowerCase().includes(search.toLowerCase())
-  ) || [];
-  const categories = [...new Set(filteredMenu.map((m) => m.category))];
+  const menu = Array.isArray(restaurant?.menu) ? restaurant.menu : [];
+  const filteredMenu = menu.filter(
+    (m) => !search || (m.name || "").toLowerCase().includes(search.toLowerCase())
+  );
+  const categories = [...new Set(filteredMenu.map((m) => m.category).filter(Boolean))];
 
   const handleAdd = async (item) => {
     if (!user) {

@@ -10,14 +10,17 @@ export default function RestaurantDashboard() {
   useEffect(() => {
     if (user?.restaurantId) {
       api.get(`/restaurants/${user.restaurantId}`).then(({ data }) => setRestaurant(data));
-      api.get("/orders").then(({ data }) => setOrders(data.filter(o => o.status !== "Delivered" && o.status !== "Cancelled")));
+      api.get("/orders").then(({ data }) => {
+        const arr = Array.isArray(data) ? data : [];
+        setOrders(arr.filter(o => o.status !== "Delivered" && o.status !== "Cancelled"));
+      }).catch(() => setOrders([]));
     }
   }, [user]);
 
   const updateStatus = async (orderId, status) => {
     try {
       await api.patch(`/orders/${orderId}/status`, { status });
-      setOrders((prev) => prev.filter((o) => o._id !== orderId));
+      setOrders((prev) => (Array.isArray(prev) ? prev : []).filter((o) => o._id !== orderId));
     } catch (err) {
       alert(err.response?.data?.error || "Failed");
     }
@@ -55,7 +58,7 @@ export default function RestaurantDashboard() {
                 <span className="px-2 py-1 bg-yellow-100 rounded text-sm">{o.status}</span>
               </div>
               <ul className="text-sm text-gray-600 mb-3">
-                {o.items?.map((i, idx) => (
+                {(Array.isArray(o.items) ? o.items : []).map((i, idx) => (
                   <li key={idx}>{i.name} x {i.quantity}</li>
                 ))}
               </ul>

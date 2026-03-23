@@ -5,13 +5,13 @@ export default function AdminRestaurants() {
   const [restaurants, setRestaurants] = useState([]);
 
   useEffect(() => {
-    api.get("/admin/restaurants").then(({ data }) => setRestaurants(data)).catch(console.error);
+    api.get("/admin/restaurants").then(({ data }) => setRestaurants(Array.isArray(data) ? data : [])).catch(() => setRestaurants([]));
   }, []);
 
   const toggleActive = async (id, isActive) => {
     try {
       const { data } = await api.patch(`/admin/restaurants/${id}`, { isActive });
-      setRestaurants((prev) => prev.map((r) => (r._id === id ? data : r)));
+      setRestaurants((prev) => (Array.isArray(prev) ? prev : []).map((r) => (r._id === id ? data : r)));
     } catch (err) {
       alert(err.response?.data?.error || "Failed");
     }
@@ -21,7 +21,7 @@ export default function AdminRestaurants() {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Manage Restaurants</h1>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {restaurants.map((r) => (
+        {(Array.isArray(restaurants) ? restaurants : []).map((r) => (
           <div key={r._id} className="bg-white rounded-xl shadow p-4">
             <h3 className="font-semibold">{r.name}</h3>
             <p className="text-sm text-gray-500">{r.cuisine?.join(", ")}</p>
