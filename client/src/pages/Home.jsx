@@ -34,11 +34,20 @@ export default function Home() {
 
   useEffect(() => {
     const q = search ? `?search=${encodeURIComponent(search)}` : "";
+    const filterDemo = (list) => {
+      if (!search) return list;
+      const s = search.toLowerCase();
+      return list.filter((r) =>
+        (r.name || "").toLowerCase().includes(s) ||
+        (Array.isArray(r.cuisine) ? r.cuisine : []).some((c) => c.toLowerCase().includes(s))
+      );
+    };
     api.get(`/restaurants${q}`).then(({ data }) => {
-      setRestaurants(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) && data.length > 0 ? data : DEMO_RESTAURANTS;
+      setRestaurants(filterDemo(list));
       setLoading(false);
     }).catch(() => {
-      setRestaurants(DEMO_RESTAURANTS);
+      setRestaurants(filterDemo(DEMO_RESTAURANTS));
       setLoading(false);
     });
   }, [search]);
